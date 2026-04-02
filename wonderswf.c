@@ -1,0 +1,313 @@
+#include "wonderswf.h"
+
+void show_intro();
+void show_help();
+FILE *open_input_file(const char *name);
+FILE *create_output_file(const char *name);
+void go_offset(FILE *target,const unsigned long int offset);
+char *get_memory(const size_t length);
+void check_executable(FILE *input);
+void check_flash_signature(FILE *input);
+void check_movie_signature(FILE *input);
+void fast_data_dump(FILE *input,FILE *output,const size_t length);
+void data_dump(FILE *input,FILE *output,const size_t length);
+unsigned long int get_file_size(FILE *target);
+unsigned long int get_movie_length(FILE *input);
+size_t get_extension_position(const char *source);
+char *get_short_name(const char *name);
+char *get_name(const char *name,const char *ext);
+unsigned long int copy_file(FILE *input,FILE *output);
+void write_service_information(FILE *output,const unsigned long int length);
+void compile_flash(const char *player,const char *flash,const char *result);
+void decompile(const char *target,const char *flash);
+void compile_movie(const char *player,const char *flash);
+void decompile_movie(const char *target);
+
+int main(int argc, char *argv[])
+{
+ show_intro();
+ switch (argc)
+ {
+  case 2:
+  puts("Working... Please wait");
+  decompile_movie(argv[1]);
+  puts("The work has been finished");
+  break;
+  case 3:
+  puts("Working... Please wait");
+  compile_movie(argv[1],argv[2]);
+  puts("The work has been finished");
+  break;
+  default:
+  show_help();
+  break;
+ }
+ return 0;
+}
+
+void show_intro()
+{
+ putchar('\n');
+ puts("Wonder swf. Version 0.5");
+ puts("The complex tool for Adobe Flash movies");
+ puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
+ puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
+ putchar('\n');
+}
+
+void show_help()
+{
+ puts("You give the wrong command-line arguments!");
+ puts("Give a standalone movie name to decompile it");
+ puts("Give the Flash Player Projector file name and the Flash movie file name to compile the standalone movie");
+}
+
+FILE *open_input_file(const char *name)
+{
+ FILE *target;
+ target=fopen(name,"rb");
+ if (target==NULL)
+ {
+  puts("Can't open the input file");
+  exit(1);
+ }
+ return target;
+}
+
+FILE *create_output_file(const char *name)
+{
+ FILE *target;
+ target=fopen(name,"wb");
+ if (target==NULL)
+ {
+  puts("Can't create the ouput file");
+  exit(2);
+ }
+ return target;
+}
+
+void go_offset(FILE *target,const unsigned long int offset)
+{
+ if (fseek(target,offset,SEEK_SET)!=0)
+ {
+  puts("Can't jump to the target offset");
+  exit(3);
+ }
+
+}
+
+char *get_memory(const size_t length)
+{
+ char *memory=NULL;
+ memory=(char*)calloc(length,sizeof(char));
+ if(memory==NULL)
+ {
+  puts("Can't allocate memory");
+  exit(4);
+ }
+ return memory;
+}
+
+void check_executable(FILE *input)
+{
+ char signature[2];
+ fread(signature,sizeof(char),2,input);
+ if (strncmp(signature,"MZ",2)!=0)
+ {
+  puts("The executable was corrupted");
+  exit(5);
+ }
+
+}
+
+void check_flash_signature(FILE *input)
+{
+ char signature[3];
+ fread(signature,sizeof(char),3,input);
+ if (strncmp(signature,"FWS",3)!=0)
+ {
+  if (strncmp(signature,"CWS",3)!=0)
+  {
+   puts("The Flash movie was corrupted");
+   exit(6);
+  }
+
+ }
+
+}
+
+void check_movie_signature(FILE *input)
+{
+ unsigned long int signature;
+ signature=0;
+ fread(&signature,sizeof(unsigned long int),1,input);
+ if (signature!=0xFA123456)
+ {
+  puts("The standalone movie was corrupted");
+  exit(7);
+ }
+
+}
+
+void data_dump(FILE *input,FILE *output,const size_t length)
+{
+ char *buffer;
+ size_t current,elapsed,block;
+ elapsed=0;
+ block=4096;
+ buffer=get_memory(block);
+ for (current=0;current<length;current+=block)
+ {
+  elapsed=length-current;
+  if (elapsed<block)
+  {
+   block=elapsed;
+  }
+  fread(buffer,sizeof(char),block,input);
+  fwrite(buffer,sizeof(char),block,output);
+  fflush(output);
+ }
+ free(buffer);
+}
+
+void fast_data_dump(FILE *input,FILE *output,const size_t length)
+{
+ char *buffer;
+ buffer=(char*)malloc(length);
+ if (buffer==NULL)
+ {
+  data_dump(input,output,length);
+ }
+ else
+ {
+  fread(buffer,sizeof(char),length,input);
+  fwrite(buffer,sizeof(char),length,output);
+  fflush(output);
+  free(buffer);
+ }
+
+}
+
+unsigned long int get_file_size(FILE *target)
+{
+ unsigned long int length;
+ fseek(target,0,SEEK_END);
+ length=ftell(target);
+ rewind(target);
+ return length;
+}
+
+unsigned long int get_movie_length(FILE *input)
+{
+ unsigned long int length;
+ length=0;
+ fread(&length,sizeof(unsigned long int),1,input);
+ return length;
+}
+
+size_t get_extension_position(const char *source)
+{
+ size_t index,position;
+ position=strlen(source);
+ for(index=position;index>0;--index)
+ {
+  if(source[index]=='.')
+  {
+   position=index;
+   break;
+  }
+
+ }
+ return position;
+}
+
+char *get_short_name(const char *name)
+{
+ size_t length;
+ char *result=NULL;
+ length=get_extension_position(name);
+ result=get_memory(length+1);
+ return strncpy(result,name,length);
+}
+
+char *get_name(const char *name,const char *ext)
+{
+  char *result=NULL;
+  char *output=NULL;
+  size_t length;
+  output=get_short_name(name);
+  length=strlen(output)+strlen(ext);
+  result=get_memory(length+1);
+  sprintf(result,"%s%s",output,ext);
+  free(output);
+  return result;
+}
+
+unsigned long int copy_file(FILE *input,FILE *output)
+{
+ unsigned long int length;
+ length=get_file_size(input);
+ fast_data_dump(input,output,(size_t)length);
+ return length;
+}
+
+void write_service_information(FILE *output,const unsigned long int length)
+{
+ unsigned long int flag;
+ flag=0xFA123456;
+ fwrite(&flag,sizeof(unsigned long int),1,output);
+ fwrite(&length,sizeof(unsigned long int),1,output);
+}
+
+void compile_flash(const char *player,const char *flash,const char *result)
+{
+ unsigned long int length;
+ FILE *projector;
+ FILE *swf;
+ FILE *output;
+ projector=open_input_file(player);
+ swf=open_input_file(flash);
+ check_executable(projector);
+ check_flash_signature(swf);
+ output=create_output_file(result);
+ copy_file(projector,output);
+ length=copy_file(swf,output);
+ write_service_information(output,length);
+ fclose(projector);
+ fclose(swf);
+ fclose(output);
+}
+
+void decompile(const char *target,const char *flash)
+{
+ FILE *input;
+ FILE *output;
+ unsigned long int total,movie;
+ input=open_input_file(target);
+ check_executable(input);
+ total=get_file_size(input);
+ go_offset(input,total-8);
+ check_movie_signature(input);
+ movie=get_movie_length(input);
+ go_offset(input,total-movie-8);
+ output=create_output_file(flash);
+ fast_data_dump(input,output,(size_t)movie);
+ fclose(input);
+ fclose(output);
+}
+
+void compile_movie(const char *player,const char *flash)
+{
+ char *output=NULL;
+ output=get_name(flash,".exe");
+ compile_flash(player,flash,output);
+ free(output);
+}
+
+void decompile_movie(const char *target)
+{
+ char *output=NULL;
+ output=get_name(target,".swf");
+ decompile(target,output);
+ free(output);
+}
