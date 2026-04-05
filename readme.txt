@@ -3,7 +3,7 @@
                  The complex tool for Adobe Flash movies
                 This software was made by Popov Evgeniy Alekseyevich
 
-                               Version 0.5
+                               Version 0.8
 
 The program description.
 
@@ -48,3 +48,6 @@ Version history.
 0.2: The experimental build.
 0.3-0.4: The small changes.
 0.5: The first public version.
+0.6: The compilation process has improved.
+0.7: The extraction process has improved.
+0.8: The small changes.

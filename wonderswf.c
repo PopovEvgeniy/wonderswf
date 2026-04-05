@@ -1,4 +1,5 @@
 #include "wonderswf.h"
+#include "format.h"
 
 void show_intro();
 void show_help();
@@ -8,11 +9,10 @@ void go_offset(FILE *target,const unsigned long int offset);
 char *get_memory(const size_t length);
 void check_executable(FILE *input);
 void check_flash_signature(FILE *input);
-void check_movie_signature(FILE *input);
+unsigned long int check_movie_signature(FILE *input);
 void fast_data_dump(FILE *input,FILE *output,const size_t length);
 void data_dump(FILE *input,FILE *output,const size_t length);
 unsigned long int get_file_size(FILE *target);
-unsigned long int get_movie_length(FILE *input);
 size_t get_extension_position(const char *source);
 char *get_short_name(const char *name);
 char *get_name(const char *name,const char *ext);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 0.5");
+ puts("Wonder swf. Version 0.8");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -114,7 +114,7 @@ void check_executable(FILE *input)
  fread(signature,sizeof(char),2,input);
  if (strncmp(signature,"MZ",2)!=0)
  {
-  puts("The executable was corrupted");
+  puts("The executable file was corrupted");
   exit(5);
  }
 
@@ -136,17 +136,16 @@ void check_flash_signature(FILE *input)
 
 }
 
-void check_movie_signature(FILE *input)
+unsigned long int check_movie_signature(FILE *input)
 {
- unsigned long int signature;
- signature=0;
- fread(&signature,sizeof(unsigned long int),1,input);
- if (signature!=0xFA123456)
+ service_information information;
+ fread(&information,sizeof(service_information),1,input);
+ if (information.signature!=0xFA123456)
  {
   puts("The standalone movie was corrupted");
   exit(7);
  }
-
+ return information.length;
 }
 
 void data_dump(FILE *input,FILE *output,const size_t length)
@@ -194,14 +193,6 @@ unsigned long int get_file_size(FILE *target)
  fseek(target,0,SEEK_END);
  length=ftell(target);
  rewind(target);
- return length;
-}
-
-unsigned long int get_movie_length(FILE *input)
-{
- unsigned long int length;
- length=0;
- fread(&length,sizeof(unsigned long int),1,input);
  return length;
 }
 
@@ -253,10 +244,10 @@ unsigned long int copy_file(FILE *input,FILE *output)
 
 void write_service_information(FILE *output,const unsigned long int length)
 {
- unsigned long int flag;
- flag=0xFA123456;
- fwrite(&flag,sizeof(unsigned long int),1,output);
- fwrite(&length,sizeof(unsigned long int),1,output);
+ service_information information;
+ information.signature=0xFA123456;
+ information.length=length;
+ fwrite(&information,sizeof(service_information),1,output);
 }
 
 void compile_flash(const char *player,const char *flash,const char *result)
@@ -286,10 +277,9 @@ void decompile(const char *target,const char *flash)
  input=open_input_file(target);
  check_executable(input);
  total=get_file_size(input);
- go_offset(input,total-8);
- check_movie_signature(input);
- movie=get_movie_length(input);
- go_offset(input,total-movie-8);
+ go_offset(input,total-SERVICE_LENGTH);
+ movie=check_movie_signature(input);
+ go_offset(input,total-movie-SERVICE_LENGTH);
  output=create_output_file(flash);
  fast_data_dump(input,output,(size_t)movie);
  fclose(input);
