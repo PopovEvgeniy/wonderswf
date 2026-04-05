@@ -2,6 +2,6 @@
 
 typedef struct
 {
- unsigned long int signature:32;
+ char signature[4];
  unsigned long int length:32;
 } service_information;

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 0.8");
+ puts("Wonder swf. Version 0.9");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -140,7 +140,7 @@ unsigned long int check_movie_signature(FILE *input)
 {
  service_information information;
  fread(&information,sizeof(service_information),1,input);
- if (information.signature!=0xFA123456)
+ if (strncmp(information.signature,"V4",2)!=0)
  {
   puts("The standalone movie was corrupted");
   exit(7);
@@ -245,7 +245,10 @@ unsigned long int copy_file(FILE *input,FILE *output)
 void write_service_information(FILE *output,const unsigned long int length)
 {
  service_information information;
- information.signature=0xFA123456;
+ information.signature[0]='V';
+ information.signature[1]='4';
+ information.signature[2]=18;
+ information.signature[3]=250;
  information.length=length;
  fwrite(&information,sizeof(service_information),1,output);
 }
