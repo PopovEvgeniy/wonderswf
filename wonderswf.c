@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.0");
+ puts("Wonder swf. Version 1.1");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -164,7 +164,6 @@ void data_dump(FILE *input,FILE *output,const size_t length)
   }
   fread(buffer,sizeof(char),block,input);
   fwrite(buffer,sizeof(char),block,output);
-  fflush(output);
  }
  free(buffer);
 }
@@ -181,7 +180,6 @@ void fast_data_dump(FILE *input,FILE *output,const size_t length)
  {
   fread(buffer,sizeof(char),length,input);
   fwrite(buffer,sizeof(char),length,output);
-  fflush(output);
   free(buffer);
  }
 
@@ -248,7 +246,7 @@ void write_service_information(FILE *output,const unsigned long int length)
  information.signature[0]='V';
  information.signature[1]='4';
  information.signature[2]=18;
- information.signature[3]=250;
+ information.signature[3]=-6;
  information.length=length;
  fwrite(&information,sizeof(service_information),1,output);
 }
