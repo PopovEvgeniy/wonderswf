@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.1");
+ puts("Wonder swf. Version 1.2");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
