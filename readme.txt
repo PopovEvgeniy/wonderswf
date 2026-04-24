@@ -3,7 +3,7 @@
                  The complex tool for Adobe Flash movies
                 This software was made by Popov Evgeniy Alekseyevich
 
-                               Version 1.2
+                               Version 1.2.4
 
 The program description.
 
@@ -27,11 +27,13 @@ Exit codes.
 0: The operation was successfully completed.
 1: Can't open the input file.
 2: Can't create the output file.
-3: Can't jump to the target offset.
-4: Can't allocate memory.
-5: The executable file was corrupted.
-6: The Flash movie was corrupted.
-7: The standalone movie was corrupted.
+3: Can't read data!
+4: Can't write data!
+5: Can't jump to the target offset.
+6: Can't allocate memory.
+7: The executable file was corrupted.
+8: The Flash movie was corrupted.
+9: The standalone movie was corrupted.
 
 License.
 
@@ -52,4 +54,7 @@ Version history.
 0.7: The extraction process has improved.
 0.8: The small changes.
 0.9: The signature checking has improved.
-1.0-1.2: The small changes.
+1.0-1.2.1: The small changes.
+1.2.2: The file processing has improved.
+1.2.3: The small changes.
+1.2.4: The file processing has improved.
