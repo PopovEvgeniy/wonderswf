@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.2.4");
+ puts("Wonder swf. Version 1.2.5");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -269,8 +269,8 @@ void write_service_information(FILE *output,const unsigned long int length)
  service_information information;
  information.signature[0]='V';
  information.signature[1]='4';
- information.signature[2]=18;
- information.signature[3]=-6;
+ information.marker[0]=18;
+ information.marker[1]=250;
  information.length=length;
  write_data(&information,sizeof(service_information),output);
 }
