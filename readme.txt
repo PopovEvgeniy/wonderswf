@@ -3,7 +3,7 @@
                  The complex tool for Adobe Flash movies
                 This software was made by Popov Evgeniy Alekseyevich
 
-                               Version 1.2.6
+                               Version 1.2.7
 
 The program description.
 
@@ -60,3 +60,4 @@ Version history.
 1.2.4: The file processing has improved.
 1.2.5: The small changes.
 1.2.6: The small bug has been fixed.
+1.2.7: The small changes.
