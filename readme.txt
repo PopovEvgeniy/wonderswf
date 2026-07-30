@@ -3,7 +3,7 @@
                  The complex tool for Adobe Flash movies
                 This software was made by Popov Evgeniy Alekseyevich
 
-                               Version 1.2.7
+                               Version 1.2.8
 
 The program description.
 
@@ -30,10 +30,11 @@ Exit codes.
 3: Can't read data!
 4: Can't write data!
 5: Can't jump to the target offset.
-6: Can't allocate memory.
-7: The executable file was corrupted.
-8: The Flash movie was corrupted.
-9: The standalone movie was corrupted.
+6: Can't get the file size!
+7: Can't allocate memory.
+8: The executable file was corrupted.
+9: The Flash movie was corrupted.
+10: The standalone movie was corrupted.
 
 License.
 
@@ -60,4 +61,4 @@ Version history.
 1.2.4: The file processing has improved.
 1.2.5: The small changes.
 1.2.6: The small bug has been fixed.
-1.2.7: The small changes.
+1.2.7-1.2.8: The small changes.
