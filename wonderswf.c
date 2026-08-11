@@ -1,8 +1,10 @@
 #include "wonderswf.h"
 #include "format.h"
+#include "exitcode.h"
 
 void show_intro();
 void show_help();
+void show_error(const char *message);
 FILE *open_input_file(const char *name);
 FILE *create_output_file(const char *name);
 void read_data(void *data,const size_t length,FILE *input);
@@ -42,6 +44,7 @@ int main(int argc, char *argv[])
   break;
   default:
   show_help();
+  exit(COMMAND_LINE_ARGUMENTS_ERROR);
   break;
  }
  return 0;
@@ -50,7 +53,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.2.8");
+ puts("Wonder swf. Version 1.2.9");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -64,19 +67,26 @@ void show_help()
  puts("Give the Flash Player Projector file name and the Flash movie file name to compile the standalone movie");
 }
 
+void show_error(const char *message)
+{
+ fputc('\n',stderr);
+ fputs(message,stderr);
+ fputc('\n',stderr);
+}
+
 FILE *open_input_file(const char *name)
 {
  FILE *target=NULL;
  if (name==NULL)
  {
-  puts("Can't open the input file");
-  exit(1);
+  show_error("Can't open the input file");
+  exit(OPEN_FILE_ERROR);
  }
  target=fopen(name,"rb");
  if (target==NULL)
  {
-  puts("Can't open the input file");
-  exit(1);
+  show_error("Can't open the input file");
+  exit(OPEN_FILE_ERROR);
  }
  return target;
 }
@@ -86,36 +96,34 @@ FILE *create_output_file(const char *name)
  FILE *target=NULL;
  if (name==NULL)
  {
-  puts("Can't create the ouput file");
-  exit(2);
+  show_error("Can't create the ouput file");
+  exit(CREATE_FILE_ERROR);
  }
  target=fopen(name,"wb");
  if (target==NULL)
  {
-  puts("Can't create the ouput file");
-  exit(2);
+  show_error("Can't create the ouput file");
+  exit(CREATE_FILE_ERROR);
  }
  return target;
 }
 
 void read_data(void *data,const size_t length,FILE *input)
 {
- fread(data,sizeof(char),length,input);
- if (ferror(input)!=0)
+ if (fread(data,sizeof(char),length,input)<length)
  {
-  puts("Can't read data!");
-  exit(3);
+  show_error("Can't read data!");
+  exit(READ_DATA_ERROR);
  }
 
 }
 
 void write_data(const void *data,const size_t length,FILE *output)
 {
- fwrite(data,sizeof(char),length,output);
- if (ferror(output)!=0)
+ if (fwrite(data,sizeof(char),length,output)<length)
  {
-  puts("Can't write data!");
-  exit(4);
+  show_error("Can't write data!");
+  exit(WRITE_DATA_ERROR);
  }
 
 }
@@ -124,8 +132,8 @@ void go_offset(FILE *target,const unsigned long int offset)
 {
  if (fseek(target,offset,SEEK_SET)!=0)
  {
-  puts("Can't jump to the target offset");
-  exit(5);
+  show_error("Can't jump to the target offset");
+  exit(SET_FILE_POSITION_ERROR);
  }
 
 }
@@ -135,8 +143,8 @@ unsigned long int get_file_size(FILE *target)
  unsigned long int length=0;
  if (fseek(target,0,SEEK_END)!=0)
  {
-  puts("Can't get the file size!");
-  exit(6);
+  show_error("Can't get the file size!");
+  exit(GET_FILE_SIZE_ERROR);
  }
  length=ftell(target);
  rewind(target);
@@ -149,8 +157,8 @@ char *get_memory(const size_t length)
  memory=(char*)calloc(length,sizeof(char));
  if(memory==NULL)
  {
-  puts("Can't allocate memory");
-  exit(7);
+  show_error("Can't allocate memory");
+  exit(MEMORY_ALLOCATION_ERROR);
  }
  return memory;
 }
@@ -161,8 +169,8 @@ void check_executable(FILE *input)
  read_data(signature,2,input);
  if (strncmp(signature,"MZ",2)!=0)
  {
-  puts("The executable file was corrupted");
-  exit(8);
+  show_error("The executable file was corrupted");
+  exit(INVALID_EXECUTABLE_ERROR);
  }
 
 }
@@ -175,8 +183,8 @@ void check_flash_signature(FILE *input)
  {
   if (strncmp(signature,"CWS",3)!=0)
   {
-   puts("The Flash movie was corrupted");
-   exit(9);
+   show_error("The Flash movie was corrupted");
+   exit(INVALID_FLASH_MOVIE_ERROR);
   }
 
  }
@@ -189,8 +197,8 @@ unsigned long int check_movie_signature(FILE *input)
  read_data(&information,sizeof(service_information),input);
  if (strncmp(information.signature,"V4",2)!=0)
  {
-  puts("The standalone movie was corrupted");
-  exit(10);
+  show_error("The standalone movie was corrupted");
+  exit(INVALID_STANDALONE_ERROR);
  }
  return information.length;
 }
