@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.2.9");
+ puts("Wonder swf. Version 1.3");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
  puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
@@ -77,12 +77,10 @@ void show_error(const char *message)
 FILE *open_input_file(const char *name)
 {
  FILE *target=NULL;
- if (name==NULL)
+ if (name!=NULL)
  {
-  show_error("Can't open the input file");
-  exit(OPEN_FILE_ERROR);
+  target=fopen(name,"rb");
  }
- target=fopen(name,"rb");
  if (target==NULL)
  {
   show_error("Can't open the input file");
@@ -94,15 +92,13 @@ FILE *open_input_file(const char *name)
 FILE *create_output_file(const char *name)
 {
  FILE *target=NULL;
- if (name==NULL)
+ if (name!=NULL)
  {
-  show_error("Can't create the ouput file");
-  exit(CREATE_FILE_ERROR);
+  target=fopen(name,"wb");
  }
- target=fopen(name,"wb");
  if (target==NULL)
  {
-  show_error("Can't create the ouput file");
+  show_error("Can't create the output file");
   exit(CREATE_FILE_ERROR);
  }
  return target;
