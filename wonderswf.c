@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
  show_intro();
  switch (argc)
  {
+  case 1:
+  show_help();
+  exit(COMMAND_LINE_ARGUMENTS_ERROR);
+  break;
   case 2:
   puts("Working... Please wait");
   decompile_movie(argv[1]);
@@ -43,7 +47,7 @@ int main(int argc, char *argv[])
   puts("The work has been finished");
   break;
   default:
-  show_help();
+  puts("You gave too many command-line arguments");
   exit(COMMAND_LINE_ARGUMENTS_ERROR);
   break;
  }
@@ -53,10 +57,10 @@ int main(int argc, char *argv[])
 void show_intro()
 {
  putchar('\n');
- puts("Wonder swf. Version 1.3");
+ puts("Wonder swf 1.3.1");
  puts("The complex tool for Adobe Flash movies");
  puts("This sofware was made by Popov Evgeniy Alekseyevich, 2026 year");
- puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE");
+ puts("This software is distributed under the GNU GENERAL PUBLIC LICENSE (version 2 or later) terms");
  putchar('\n');
 }
 
