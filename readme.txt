@@ -3,7 +3,7 @@
                  The complex tool for Adobe Flash movies
                 This software was made by Popov Evgeniy Alekseyevich
 
-                               Version 1.3.1
+                               Version 1.3.1.1
 
 The program description.
 
@@ -35,7 +35,7 @@ Exit codes.
 8: The executable file was corrupted.
 9: The Flash movie was corrupted.
 10: The standalone movie was corrupted.
-11: The command-line arguments is invalid!
+11: The command-line arguments are invalid!
 
 License.
 
@@ -52,16 +52,17 @@ Version history.
 0.2: The experimental build.
 0.3-0.4: The small changes.
 0.5: The first public version.
-0.6: The compilation process has improved.
-0.7: The extraction process has improved.
+0.6: The compilation process has been improved.
+0.7: The extraction process has been improved.
 0.8: The small changes.
-0.9: The signature checking has improved.
+0.9: The signature checking has been improved.
 1.0-1.2.1: The small changes.
-1.2.2: The file processing has improved.
+1.2.2: The file processing has been improved.
 1.2.3: The small changes.
-1.2.4: The file processing has improved.
+1.2.4: The file processing has been improved.
 1.2.5: The small changes.
 1.2.6: The small bug has been fixed.
 1.2.7-1.2.8: The small changes.
-1.2.9-1.3: The file processing has improved.
+1.2.9-1.3: The file processing has been improved.
 1.3.1: The small changes.
+1.3.1.1: The documentation has been updated.
